@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class IrcServer {
     private static final Logger logger = Logger.getLogger(IrcServer.class.getName());
 
-    private final int port;
+    private static int port = 8980;
     private ServerImpl grpcServer;
     
     public IrcServer(int port) {
@@ -30,9 +30,10 @@ public class IrcServer {
     /** Start serving requests. */
     public void start() throws IOException {
         grpcServer = NettyServerBuilder.forPort(port)
-            .addService(ChatGrpc.bindService(new ChatService()))
-            .build().start();
+                .addService(ChatGrpc.bindService(new ChatService()))
+                .build().start();
         logger.info("Server started, listening on " + port);
+        
         Runtime.getRuntime().addShutdownHook(new Thread() {
         @Override
             public void run() {
@@ -54,12 +55,13 @@ public class IrcServer {
     public static void main(String[] args) throws Exception {
         IrcServer server = new IrcServer(8980);
         server.start();
+        
     }
     
     private static class ChatService implements ChatGrpc.Chat{
-        
+                
         ChatService() {
-            
+            ChatTool tool = new ChatTool();
         }
         
         @Override
@@ -75,7 +77,7 @@ public class IrcServer {
             System.out.println(
                     "[" + date.getYear() + "-" + date.getMonth() + "-" + date.getDate() + "] "
                             + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + " NICKNAME " + nickname);
-            responseObserver.onValue(request);
+            responseObserver.onValue(gString.newBuilder().setVal(nickname).build());
             responseObserver.onCompleted();
         }
 
@@ -160,10 +162,12 @@ public class IrcServer {
                     channelC.sendMessagetoMember(nickname, message);
                     System.out.println("Message added");
                     responseObserver.onValue(gInt.newBuilder().setVal(1).build());
+                } else {
+                    responseObserver.onValue(gInt.newBuilder().setVal(-1).build());
                 }
-                responseObserver.onValue(gInt.newBuilder().setVal(-1).build());
+            } else {
+                responseObserver.onValue(gInt.newBuilder().setVal(0).build());
             }
-            responseObserver.onValue(gInt.newBuilder().setVal(0).build());
             responseObserver.onCompleted();
         }
 

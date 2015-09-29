@@ -38,49 +38,36 @@ public class IrcClient {
     
     public static void main(String[] args) throws Exception {
         IrcClient client = new IrcClient("localhost", 8980);
-        
-        Thread clientHandler = client.getThreadHandler();
+
         try {
             nickname = null;
             alive = 0;
-            clientHandler.start();
+            Scanner in = new Scanner(System.in);
+            String command;
+
+            while (alive != -1) {
+                command = in.nextLine();
+                client.sendCommand(command);    
+            }
+
         } finally {
           client.shutdown();
         }
-    }
-    
-    private Thread getThreadHandler() {
-        return new Thread() {
-            Scanner in = new Scanner(System.in);
-            String command;
-        
-            @Override
-            public void run() {
-                try {
-                    while (alive != -1) {
-                        command = in.nextLine();
-                        sendCommand(command);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
     }
     
     /*
      * Call service method based on what user's input
      * @param String
      */
-    private static void sendCommand(String command) {
+    private void sendCommand(String command) {
         String[] parsed = command.split(" ");
         
-        gString parsed1 = gString.newBuilder().setVal(parsed[1]).build();
         switch(parsed[0]){
             case "/NICK" : {
                 if (nickname != null) {
                     blockingStub.exit(gString.newBuilder().setVal(nickname).build());
                 }
+                gString parsed1 = gString.newBuilder().setVal(parsed[1]).build();
                 nickname = blockingStub.setNickname(parsed1).getVal();
                 System.out.println("Your nickname is " + nickname);
                 alive = 1;                    
@@ -173,7 +160,7 @@ public class IrcClient {
         }
     }
     
-    private static void receive() {
+    private void receive() {
         Iterator<Message> messages = blockingStub.receiveMessage(gString.newBuilder().setVal(nickname).build());
 
         List<Message> listMessages = new ArrayList<Message>();

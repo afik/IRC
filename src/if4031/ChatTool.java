@@ -14,8 +14,9 @@ public class ChatTool {
     private static ArrayList<User> users;
     private static ArrayList <Channel> channels;
     private static ArrayList<String> listRandom;
-
-    public ChatTool(){
+    
+    static {
+        System.out.println("Masuk const tool");
         users = new ArrayList<>();
         channels = new ArrayList<>();
         listRandom = new ArrayList<>();
@@ -24,6 +25,9 @@ public class ChatTool {
         listRandom.add("afik");
         listRandom.add("sin");
         listRandom.add("bela");
+    }
+    
+    public ChatTool(){
     }
     
     public static boolean isNicknameExist(String nickName){

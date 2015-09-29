@@ -30,7 +30,7 @@ public class Channel {
                             .setChannel(channelName)
                             .setMessage(message)
                             .setNickname(nickSource)
-                            .setTime(null)
+                            .setTime("-")
                             .build();
         for(String nick : users){
             user = ChatTool.getUser(nick);
