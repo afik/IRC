@@ -14,5 +14,5 @@ This IRC implemented using :
 * RabbitMQ
 
 by 
-* Junita Sinambela (@junitasinamble)
+* Junita Sinambela (@junitasinambela)
 * Khoirunnisa Afifah
