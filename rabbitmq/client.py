@@ -19,7 +19,7 @@ class ReceiveThread(threading.Thread):
 		channel.basic_qos(prefetch_count=1)
 
 		def callback(ch, method, properties, body):
-		    print ("%r" % (body, ))
+		    print(body)
 		    ch.basic_ack(delivery_tag = method.delivery_tag) 
 
 		channeltemp.basic_consume(callback, queue=self.queuename)
@@ -79,8 +79,9 @@ def sendMessageTo(channelname, message):
 		print("No channel")
 
 def exit():
+	if(not nickname == ""):
+		channel.queue_delete(queue=queuename)
 	print("Good bye")
-	channel.queue_delete(queue=queuename)
 	connection.close()
 	raise SystemExit #TODO 2
 
@@ -89,22 +90,24 @@ def callMethod(command):
 	if(commandlist[0] == "/NICK"):
 		setNickName(commandlist[1])
 	else:
-		if(not nickname == ""):
-			if(commandlist[0] == "/JOIN"):
-				joinChannel(commandlist[1])
-			elif(commandlist[0] == "/LEAVE"):
-				leaveChannel(commandlist[1])
-			elif(commandlist[0] == "/EXIT"):
-				exit()
-			else :
-				if(commandlist[0].startswith('@')):
-					if(len(commandlist) > 1):
-						splitting = commandlist[0].split("@", maxsplit=1)
-						sendMessageTo(splitting[1], commandlist[1])
-				else:
-					sendMessage(command)
+		if(commandlist[0] == "/EXIT"):	#leaveallchannel()
+			exit()
 		else:
-			print("Set your nickname first")
+			if(not nickname == ""):
+				if(commandlist[0] == "/JOIN"):
+					joinChannel(commandlist[1])
+				elif(commandlist[0] == "/LEAVE"):
+					leaveChannel(commandlist[1])
+				else :
+					if(commandlist[0].startswith('@')):
+						if(len(commandlist) > 1):
+							splitting = commandlist[0].split("@", maxsplit=1)
+							sendMessageTo(splitting[1], commandlist[1])
+					else:
+						if(not command == ""):
+							sendMessage(command)
+			else:
+				print("Set your nickname first")
 
 def sendthread():
 	commandtemp = input()
