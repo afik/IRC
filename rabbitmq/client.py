@@ -1,5 +1,6 @@
 #TODO : 
 # 4- pretty format buat print received messages
+# 5- nickname exist
 
 import pika, threading, time
 
@@ -19,7 +20,7 @@ class ReceiveThread(threading.Thread):
 		channel.basic_qos(prefetch_count=1)
 
 		def callback(ch, method, properties, body):
-		    print(body)
+		    print(str(body))
 		    ch.basic_ack(delivery_tag = method.delivery_tag) 
 
 		channeltemp.basic_consume(callback, queue=self.queuename)
@@ -34,7 +35,7 @@ def setNickName(nickName):
 	global nickname
 	nicktemp = nickname
 	nickname = nickName
-	if(nicktemp == ""):									# check if nick empty at first, if true, create receivethread
+	if(nicktemp == ""):	# check if nick empty at first, if true, create receivethread
 		global queuename
 		queuename = nickname
 		result = channel.queue_declare(queue=queuename, durable=True)
@@ -72,7 +73,7 @@ def sendMessageTo(channelname, message):
 	message = "[" + channelname + "] (" + nickname + ") " + message
 	if(len(listchannel) > 0):
 		if(channelname in listchannel):
-			channel.basic_publish(exchange=exchange, routing_key=channelname, body=message) #TODO 4
+			channel.basic_publish(exchange=exchange, routing_key=channelname, body=message) 
 		else:
 			print("No ", channelname, " channel")
 	else:
@@ -83,14 +84,14 @@ def exit():
 		channel.queue_delete(queue=queuename)
 	print("Good bye")
 	connection.close()
-	raise SystemExit #TODO 2
+	raise SystemExit 
 
 def callMethod(command):		
 	commandlist = splitstring(command)
 	if(commandlist[0] == "/NICK"):
 		setNickName(commandlist[1])
 	else:
-		if(commandlist[0] == "/EXIT"):	#leaveallchannel()
+		if(commandlist[0] == "/EXIT"):	
 			exit()
 		else:
 			if(not nickname == ""):

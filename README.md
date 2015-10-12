@@ -2,10 +2,10 @@
 
 Usage :
 * `/NICK nickname` : set nickname
-* `/JOIN channel` : join channel
-* `/LEAVE channel` : leave channel
+* `/JOIN channel-name` : join channel
+* `/LEAVE channel-name` : leave channel
 * `/EXIT` : logout and close IRC
-* `@channel message` : send message and close app
+* `@channel-name message` : send message to channel `channel-name`
 * `message` : send message to all channel you've joined
 
 This IRC implemented using :
