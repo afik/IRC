@@ -1,7 +1,3 @@
-#TODO : 
-# 4- pretty format buat print received messages
-# 5- nickname exist
-
 import pika, threading, time
 
 class ReceiveThread(threading.Thread):
@@ -16,7 +12,7 @@ class ReceiveThread(threading.Thread):
 		connectiontemp = pika.BlockingConnection(pika.ConnectionParameters(
 		        host=self.host)) #167.205.32.46
 		channeltemp = connectiontemp.channel()
-		channeltemp.queue_declare(queue=self.queuename, durable=True)
+		channeltemp.queue_declare(queue=self.queuename, auto_delete=True)
 		channel.basic_qos(prefetch_count=1)
 
 		def callback(ch, method, properties, body):
@@ -33,15 +29,15 @@ def splitstring(command):
 
 def setNickName(nickName):
 	global nickname
-	nicktemp = nickname
-	nickname = nickName
-	if(nicktemp == ""):	# check if nick empty at first, if true, create receivethread
-		global queuename
+	global queuename
+	if(nickname == ""):	
+		nickname = nickName
 		queuename = nickname
-		result = channel.queue_declare(queue=queuename, durable=True)
-		global receivethread
+		channel.queue_declare(queue=queuename, auto_delete=True)
 		receivethread = ReceiveThread(queuename, host)
 		receivethread.start()
+	else:
+		nickname = nickName
 	print("Your nickname is ", nickname)
 
 def joinChannel(channelname):
@@ -128,7 +124,7 @@ def main():
 nickname = ""
 queuename = ""
 listchannel = []
-host = 'localhost' #167.205.32.46
+host = "167.205.32.46" # "167.205.32.46"
 connection = None
 channel = None
 receivethread = None
