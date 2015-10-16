@@ -13,8 +13,10 @@ import kafka.producer.ProducerConfig;
  */
 public class Client {
     final static String TOPIC = "javatest";
-
+    public static ProducerConfig producerConfig;
+    public static String nickName;
     public static void main(String[] argv){
+        nickName = "";
         Properties properties = new Properties();
         properties.put("metadata.broker.list","localhost:9092");
         properties.put("serializer.class","kafka.serializer.StringEncoder");
