@@ -6,6 +6,7 @@
 package if4031;
 
 import java.util.List;
+import java.util.Properties;
 import kafka.producer.ProducerConfig;
 
 /**
@@ -13,7 +14,10 @@ import kafka.producer.ProducerConfig;
  * @author user
  */
 public class Tools {
-    public static ProducerConfig producerConfig;
     public static String nickName;
     public static List<String> listChannel;
+    
+    
+    
+    
 }

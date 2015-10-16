@@ -16,14 +16,15 @@ import kafka.consumer.ConsumerIterator;
  *
  * @author TOLEP
  */
-public class Consumer {
+public class Consumer implements Runnable{
     private final ConsumerConnector consumer;
     private final String topic;
+    private final String zooKeeper = "localhost:2181";
     private  ExecutorService executor;
  
-    public Consumer(String a_zookeeper, String a_groupId, String a_topic) {
+    public Consumer(String a_groupId, String a_topic) {
         consumer = kafka.consumer.Consumer.createJavaConsumerConnector(
-                createConsumerConfig(a_zookeeper, a_groupId));
+                createConsumerConfig(zooKeeper, a_groupId));
         this.topic = a_topic;
     }
  
@@ -38,17 +39,17 @@ public class Consumer {
             System.out.println("Interrupted during shutdown, exiting uncleanly");
         }
    }
- 
-    public void run(int a_numThreads) {
+    
+    @Override
+    public void run() {
         Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
-        topicCountMap.put(topic, new Integer(a_numThreads));
+        topicCountMap.put(topic, new Integer(1));
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
         List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
         
         ConsumerIterator<byte[], byte[]> it = streams.get(0).iterator();
         while (it.hasNext())
-            System.out.println("Message received : " + new String(it.next().message()));
-        System.out.println("Shutting down ");
+            System.out.println(new String(it.next().message()));
     }
  
     private static ConsumerConfig createConsumerConfig(String a_zookeeper, String a_groupId) {
@@ -62,13 +63,14 @@ public class Consumer {
     }
  
     public static void main(String[] args) {
-        String zooKeeper = "localhost:2181";
+        
         String groupId = "1";
         String topic = "page_visits";
  
-        Consumer example = new Consumer(zooKeeper, groupId, topic);
-        example.run(1);
+        Consumer example = new Consumer(groupId, topic);
+        example.run();
 
         example.shutdown();
     }
+
 }

@@ -28,7 +28,7 @@ public class Producer {
                 case "/NICK":{
                     if(Tools.nickName.equals("")){
                         Tools.nickName = parsed[1];
-                        producer = new kafka.javaapi.producer.Producer<String, String>(Tools.producerConfig);
+                        //producer = new kafka.javaapi.producer.Producer<String, String>(Tools.producerConfig);
                     }
                     break;
                 }
