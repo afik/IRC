@@ -1,4 +1,4 @@
-import pika, threading, time
+import pika, threading, time, random
 
 class ReceiveThread(threading.Thread):
 	lock = threading.Lock()
@@ -27,13 +27,25 @@ def splitstring(command):
 	commandlist = command.split(" ", maxsplit=1)
 	return commandlist
 
+def qdeclare_callback(method_frame):
+	print("enter callback")
+	global nickname
+	global queuename
+	print (method_frame)
+	if (not method_frame): # method_frame is a result from queue_declare:
+		queuename = random.choice(rand_nick)
+		nickname = queuename
+		channel.queue_declare(queue=queuename, auto_delete=True, passive=True)
+		
 def setNickName(nickName):
 	global nickname
 	global queuename
 	if(nickname == ""):	
-		nickname = nickName
-		queuename = nickname
-		channel.queue_declare(queue=queuename, auto_delete=True)
+		queuename = nickName
+		print(queuename)
+		result = channel.queue_declare(qdeclare_callback, queue=queuename,passive=True, auto_delete=True)
+		nickname = queuename
+
 		receivethread = ReceiveThread(queuename, host)
 		receivethread.start()
 	else:
@@ -124,10 +136,11 @@ def main():
 nickname = ""
 queuename = ""
 listchannel = []
-host = "167.205.32.46" # "167.205.32.46"
+host = "localhost" # "167.205.32.46"
 connection = None
 channel = None
 receivethread = None
 exchange = "13512023__"
+rand_nick = ['af', 'ik', 'jun', 'ita', 'sina', 'bela']
 
 main()
