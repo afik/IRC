@@ -91,11 +91,10 @@ public class Client {
             switch(parsed[0]){
                 case "/NICK":{
                     if(nickname.equals("")){
-                        nickname = checkNickname(parsed[1]); //see TODO below
-                        System.out.println("Your nickname : " + nickname);
                         producer = new kafka.javaapi.producer.Producer<>(getProducerConfig());
+                        System.out.println("Your nickname : " + nickname);
                     } else {
-                        //TODO logout and set new nick
+                        System.out.println("Nickname already set. Your nickname : " + nickname);
                     }
                     break;
                 }
@@ -168,11 +167,6 @@ public class Client {
     public String receiveCommand(){
         Scanner in = new Scanner(System.in);
         return in.nextLine();
-    }
-    
-    public static String checkNickname(String nick) {
-        //TODO : if exist generate new random
-        return nick;
     }
     
     public static String[] parsing(String command){
